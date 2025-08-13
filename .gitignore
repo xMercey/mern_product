@@ -1,0 +1,23 @@
+# Node modules 
+node_modules/
+
+# Umgebungsvariablen 
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# TypeScript-Ausgabeordner
+dist/
+build/
+
+# VSCode-Einstellungen
+.vscode/
+
+# MacOS-Dateien
+.DS_Store
+
+# Windows-Dateien
+Thumbs.db
