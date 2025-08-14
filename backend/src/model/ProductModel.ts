@@ -2,7 +2,7 @@ import { Schema, model} from "mongoose"
 
 export interface IProduct {
     name: string
-    price: string
+    price: number
     image: string
 
 }
@@ -10,7 +10,7 @@ export interface IProduct {
 const productModelSchema = new Schema<IProduct> (
     {
         name: { type: String, required: true},
-        price: { type: String, required: true},
+        price: { type: Number, required: true},
         image: { type: String, required: true},
     }, {
         timestamps: true

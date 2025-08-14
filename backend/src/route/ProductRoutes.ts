@@ -1,22 +1,39 @@
-import express from "express"
+import express, { NextFunction, Request, Response } from "express"
 import { Product } from "../model/ProductModel";
+import { body, matchedData, validationResult } from "express-validator";
+
 
 export const productRouter = express.Router();
 
-productRouter.post("/", async (req, res, next) => {
-    try {
-        const product = req.body;
-        const newProduct = new Product(product);
-        await newProduct.save();
-        res.status(201).json({success: true, data: newProduct}); 
-    } catch (error: any) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        } else {
-            next(error);
-        }
+async function validation(req: Request, res: Response, next: NextFunction):Promise<void>{
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        res.status(400).json({errors: errors.array()});
+        return;
     }
-});
+    next();
+}
+
+productRouter.post("/", 
+    body("name").exists().isString().isLength({min:1, max:100}),
+    body("price").exists().isNumeric().toFloat(),
+    body("image").exists().isString().isLength({ min:1, max:500}),
+    validation,
+    async (req, res, next) => {
+
+        try {
+            const product = matchedData(req, {locations: ["body"]});
+            const newProduct = new Product(product);
+            await newProduct.save();
+            res.status(201).json({success: true, data: newProduct}); 
+        } catch (error: any) {
+            if (error instanceof Error) {
+                res.status(500).json({ message: error.message });
+            } else {
+                next(error);
+            }
+        }
+    });
 
 productRouter.get("/", async (_req, res)=> {
     const products = await Product.find({}).exec();
