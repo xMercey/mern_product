@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express"
 import { Product } from "../model/ProductModel";
-import { body, matchedData, validationResult } from "express-validator";
+import { body, matchedData, param, validationResult } from "express-validator";
 
 
 export const productRouter = express.Router();
@@ -20,7 +20,6 @@ productRouter.post("/",
     body("image").exists().isString().isLength({ min:1, max:500}),
     validation,
     async (req, res, next) => {
-
         try {
             const product = matchedData(req, {locations: ["body"]});
             const newProduct = new Product(product);
@@ -40,16 +39,25 @@ productRouter.get("/", async (_req, res)=> {
     res.status(200).json({success: true, products});
 });
 
-productRouter.get("/:id", async (req, res)=> {
-    const {id} = req.params;
-    const product = await Product.findById(id).exec();
-    res.status(200).json({success: true, data: product});
+productRouter.get("/:id",
+    param("id").isMongoId(),
+    validation,
+    async (req, res)=> {
+        const {id} = matchedData(req, {locations: ["params"]});
+        const product = await Product.findById(id).exec();
+        res.status(200).json({success: true, data: product});
 });
 
-productRouter.put("/:id", async (req, res, next) => {
+productRouter.put("/:id",
+    param("id").isMongoId(),
+    body("name").exists().isString().isLength({ min:1, max:500}),
+    body("price").exists().isNumeric().isFloat(),
+    body("image").exists().isString().isLength({ min: 1, max:500}),
+    validation,
+    async (req, res, next) => {
     try {
-        const {id} = req.params;
-        const product = req.body;
+        const {id} = matchedData(req, {locations: ["params"]});
+        const product = matchedData(req, {locations: ["body"]});
         const updateProduct = await Product.findByIdAndUpdate(id, product, {new: true}).exec();
         res.status(200).json({success: true, data: updateProduct});
     } catch (error: any) {
@@ -60,9 +68,12 @@ productRouter.put("/:id", async (req, res, next) => {
     }
 });
 
-productRouter.delete("/:id", async (req, res, next)=> {
+productRouter.delete("/:id",
+    param("id").isMongoId(),
+    validation,
+    async (req, res, next)=> {
     try {
-        const {id} = req.params;
+        const {id} = matchedData(req, {locations: ["params"]});
         await Product.findByIdAndDelete(id).exec();
         res.status(200).json({success: true, message: "Deleted Product"});
     } catch (error: any) {
