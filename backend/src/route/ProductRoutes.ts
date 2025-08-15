@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from "express"
 import { Product } from "../model/ProductModel";
 import { body, matchedData, param, validationResult } from "express-validator";
 
-
 export const productRouter = express.Router();
 
 async function validation(req: Request, res: Response, next: NextFunction):Promise<void>{
@@ -39,14 +38,26 @@ productRouter.get("/", async (_req, res)=> {
     res.status(200).json({success: true, products});
 });
 
-productRouter.get("/:id",
-    param("id").isMongoId(),
-    validation,
-    async (req, res)=> {
-        const {id} = matchedData(req, {locations: ["params"]});
-        const product = await Product.findById(id).exec();
-        res.status(200).json({success: true, data: product});
-});
+productRouter.get(
+  "/:id",
+  param("id").isMongoId(),
+  validation,
+  async (req, res, next) => {
+    try {
+      const { id } = matchedData(req, { locations: ["params"] });
+      const product = await Product.findById(id).exec();
+
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+
+      res.status(200).json({ success: true, data: product });
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
 
 productRouter.put("/:id",
     param("id").isMongoId(),
