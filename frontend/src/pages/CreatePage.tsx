@@ -1,4 +1,5 @@
 import { useColorModeValue } from "@/components/color-mode";
+import { createProduct } from "@/components/productApi";
 import {Container,VStack,Heading,Box,Input,Button,Text} from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -16,8 +17,17 @@ export function CreatePage() {
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const button = useColorModeValue("teal.600", "teal.500");
 
-  function handleAddProduct() {
-    console.log(newProduct);
+  async function handleAddProduct() {
+    try {
+        const data = await createProduct(newProduct);
+        console.log("Success:", data);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log("Error:", error.message);
+        } else {
+          console.log("Unbekannter Fehler");
+        }
+    }
   }
 
   return (
@@ -47,7 +57,6 @@ export function CreatePage() {
           border="1px solid"
           borderColor={borderColor}
         >
-            console.log(import.meta.env.VITE_API_URL);
           <VStack gap={5}>
             <Input
               placeholder="Produktname"
