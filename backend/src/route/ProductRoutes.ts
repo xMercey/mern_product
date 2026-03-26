@@ -14,9 +14,18 @@ async function validation(req: Request, res: Response, next: NextFunction):Promi
 }
 
 productRouter.post("/", 
-    body("name").exists().isString().isLength({min:1, max:100}),
-    body("price").exists().isNumeric().toFloat(),
-    body("image").exists().isString().isLength({ min:1, max:500}),
+    body("name")
+        .exists().withMessage("Name ist erforderlich")
+        .isString().withMessage("Name muss ein Text sein")
+        .isLength({min:1, max:100}),
+        body("price")
+        .exists().withMessage("Preis ist erforderlich")
+        .isNumeric().withMessage("Preis muss eine Zahl sein")
+        .toFloat(),
+        body("image")
+        .exists().withMessage("Bild ist erforderlich")
+        .isString().withMessage("Bild muss ein Text sein")
+        .isLength({ min:1, max:500}),
     validation,
     async (req, res, next) => {
         try {
