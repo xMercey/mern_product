@@ -1,5 +1,5 @@
 import { useColorModeValue } from "@/components/color-mode";
-import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid} from "@chakra-ui/react";
+import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getProducts } from "@/components/productApi";
 import { ProductCard } from "@/components/ProductCard";
@@ -42,6 +42,13 @@ export function HomePage() {
         >
           Derzeitige Produkte
         </Heading>
+
+        {loading && (
+          <VStack colorPalette="teal">
+            <Spinner color={brandColor} size="xl" />
+            <Text m={4} fontSize={"md"} color={brandColor}>Produkte laden...</Text>
+          </VStack>
+        )}
 
         <SimpleGrid
             columns={{
