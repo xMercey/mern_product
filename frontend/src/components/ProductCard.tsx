@@ -1,10 +1,21 @@
 import { Box, Heading, HStack, IconButton, Image, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "./color-mode";
 import { DeleteIcon, EditIcon } from "lucide-react";
+import { deleteProduct } from "./productApi";
 
 
-export function ProductCard({product}: {product: any}) {
+export function ProductCard({product, onDelete}: {product: any; onDelete: (id: string) => void;}) {
     const text = useColorModeValue("gray.600", "gray.400");
+
+    async function handleDeleteProduct() {
+        try {
+            await deleteProduct(product._id);
+            onDelete(product._id)
+          } catch (error) {
+            console.error(error);
+          }
+    }
+
     return (
         <>
         <Box
@@ -30,7 +41,7 @@ export function ProductCard({product}: {product: any}) {
                     <EditIcon/>
                 </IconButton>
 
-                <IconButton aria-label="Produkt löschen">
+                <IconButton aria-label="Produkt löschen" onClick={handleDeleteProduct}>
                     <DeleteIcon/>
                 </IconButton>             
             </HStack>

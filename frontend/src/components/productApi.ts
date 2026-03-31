@@ -42,3 +42,19 @@ export async function getProducts() {
     }
     return data.products;
 }
+
+export async function deleteProduct(id: String) {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || "Fehler beim Löschen");
+    }
+
+    return data;
+        
+
+}
