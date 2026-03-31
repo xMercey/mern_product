@@ -2,6 +2,7 @@ import { useColorModeValue } from "@/components/color-mode";
 import { createProduct } from "@/components/productApi";
 import {Container,VStack,Heading,Box,Input,Button,Text} from "@chakra-ui/react";
 import { useState } from "react";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 export function CreatePage() {
   const [newProduct, setNewProduct] = useState({
@@ -19,18 +20,25 @@ export function CreatePage() {
 
   async function handleAddProduct() {
     try {
-        const data = await createProduct(newProduct);
-        console.log("Success:", data);
+        await createProduct(newProduct);
+        toaster.create({
+          title: "Produkt erstellt",
+          description: "Das Produkt wurde erfolgreich gespeichert.",
+          type: "success",
+        });
     } catch (error) {
-        if (error instanceof Error) {
-            console.log("Error:", error.message);
-        } else {
-          console.log("Unbekannter Fehler");
-        }
+        toaster.create({
+          title: "Fehler",
+          description: "Das Produkt konnte nicht gespeichert werden.",
+          type: "error",         
+        })
     }
-  }
+    setNewProduct({name: "", price: "", image: ""});
+  };
 
   return (
+    <>  
+    <Toaster />
     <Container maxW="container.md" py={{ base: 10, md: 14 }}>
       <VStack gap={8}>
         <VStack gap={2}>
@@ -109,5 +117,6 @@ export function CreatePage() {
         </Box>
       </VStack>
     </Container>
+    </>
   );
 }
