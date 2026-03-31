@@ -49,43 +49,45 @@ export function HomePage() {
             ))}
         </SimpleGrid>
 
-        <Box
-          w="full"
-          maxW="3xl"
-          bg={cardBg}
-          border="1px solid"
-          borderColor={borderColor}
-          rounded="2xl"
-          shadow={shadow}
-          px={{ base: 6, md: 10 }}
-          py={{ base: 8, md: 10 }}
-        >
-          <VStack gap={4}>
-            <Text
-              fontSize={{ base: "lg", md: "xl" }}
-              fontWeight="semibold"
-              color={text}
-              textAlign="center"
-            >
-              Noch keine Produkte vorhanden
-            </Text>
-
-            <HStack gap={2} justify="center" flexWrap="wrap">
-              <Text color={text}>Starte jetzt mit deinem ersten Eintrag.</Text>
-
-              <Link
-                href="/create"
-                color={brandColor}
-                fontWeight="bold"
-                _hover={{
-                  textDecoration: "underline",
-                }}
-              >
-                Produkt hinzufügen
-              </Link>
-            </HStack>
-          </VStack>
-        </Box>
+        {products.length === 0 && (
+                    <Box
+                    w="full"
+                    maxW="3xl"
+                    bg={cardBg}
+                    border="1px solid"
+                    borderColor={borderColor}
+                    rounded="2xl"
+                    shadow={shadow}
+                    px={{ base: 6, md: 10 }}
+                    py={{ base: 8, md: 10 }}
+                  >
+                    <VStack gap={4}>
+                      <Text
+                        fontSize={{ base: "lg", md: "xl" }}
+                        fontWeight="semibold"
+                        color={text}
+                        textAlign="center"
+                      >
+                        Noch keine Produkte vorhanden
+                      </Text>
+          
+                      <HStack gap={2} justify="center" flexWrap="wrap">
+                        <Text color={text}>Starte jetzt mit deinem ersten Eintrag.</Text>
+          
+                        <Link
+                          href="/create"
+                          color={brandColor}
+                          fontWeight="bold"
+                          _hover={{
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Produkt hinzufügen
+                        </Link>
+                      </HStack>
+                    </VStack>
+                  </Box>
+        )}
       </VStack>
     </Container>
   );
