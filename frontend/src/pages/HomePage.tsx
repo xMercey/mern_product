@@ -12,11 +12,18 @@ export function HomePage() {
   const shadow = useColorModeValue("md", "dark-lg");
 
   const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   async function fetchProducts() {
-    const data = await getProducts();
-    setProducts(data);
-  }
+    try {
+        const data = await getProducts();
+        setProducts(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
   useEffect(() => {
     fetchProducts();
@@ -56,7 +63,7 @@ export function HomePage() {
             ))}
         </SimpleGrid>
 
-        {products.length === 0 && (
+        {!loading && products.length === 0 && (
                     <Box
                     w="full"
                     maxW="3xl"
