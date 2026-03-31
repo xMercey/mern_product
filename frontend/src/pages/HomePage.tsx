@@ -31,6 +31,7 @@ export function HomePage() {
           fontWeight="extrabold"
           color={brandColor}
           textAlign="center"
+          m={3}
         >
           Derzeitige Produkte
         </Heading>

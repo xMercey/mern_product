@@ -1,7 +1,8 @@
 import { Box, Button, CloseButton, Dialog, Heading, HStack, IconButton, Image, Portal, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "./color-mode";
-import { DeleteIcon, EditIcon } from "lucide-react";
+import { EditIcon, Trash } from "lucide-react";
 import { deleteProduct } from "./productApi";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 
 export function ProductCard({product, onDelete}: {product: any; onDelete: (id: string) => void;}) {
@@ -11,13 +12,28 @@ export function ProductCard({product, onDelete}: {product: any; onDelete: (id: s
         try {
             await deleteProduct(product._id);
             onDelete(product._id)
+            toaster.create({
+                title: "Produkt gelöscht",
+                description: `${product.name} wurde gelöscht.`,
+                type: "success",
+              });
           } catch (error) {
-            console.error(error);
+            const message =
+              error instanceof Error
+                ? error.message
+                : "Produkt konnte nicht gelöscht werden.";
+          
+            toaster.create({
+              title: "Fehler",
+              description: message,
+              type: "error",
+            });
           }
     }
 
     return (
         <>
+        <Toaster />
         <Box
             shadow={"lg"}
             rounded={"lg"}
@@ -27,7 +43,7 @@ export function ProductCard({product, onDelete}: {product: any; onDelete: (id: s
         >
             <Image src={product.image} alt= {product.name} h={52} w={"full"} objectFit={"cover"}/>
             
-            <Box p={4}>
+            <Box p={5}>
                 <Heading as={"h3"} size={"md"} mb={2}>
                     {product.name}
                 </Heading>
@@ -40,6 +56,7 @@ export function ProductCard({product, onDelete}: {product: any; onDelete: (id: s
                     <IconButton aria-label="Produkt bearbeiten">
                         <EditIcon/>
                     </IconButton>
+                
 
                 <Dialog.Root placement="center" motionPreset="slide-in-bottom">
                     <Dialog.Trigger asChild>
@@ -49,7 +66,7 @@ export function ProductCard({product, onDelete}: {product: any; onDelete: (id: s
                         color="white"
                         _hover={{ bg: "red.600" }}
                         >
-                            <DeleteIcon/>
+                            <Trash />
                         </IconButton>  
                     </Dialog.Trigger>
 
