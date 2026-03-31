@@ -1,16 +1,29 @@
 import { useColorModeValue } from "@/components/color-mode";
-import {Container,VStack,Text,Link,Heading,HStack,Box,
-} from "@chakra-ui/react";
+import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { getProducts } from "@/components/productApi";
+import { ProductCard } from "@/components/ProductCard";
 
 export function HomePage() {
   const brandColor = useColorModeValue("teal.600", "teal.300");
-  const mutedText = useColorModeValue("gray.600", "gray.400");
+  const text = useColorModeValue("gray.600", "gray.400");
   const cardBg = useColorModeValue("white", "gray.900");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const shadow = useColorModeValue("md", "dark-lg");
 
+  const [products, setProducts] = useState<any[]>([]);
+
+  async function fetchProducts() {
+    const data = await getProducts();
+    setProducts(data);
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
-    <Container maxW="container.lg" py={{ base: 16, md: 24 }}>
+    <Container maxW="container.xl" py={{ base: 16, md: 24 }}>
       <VStack gap={10}>
         <Heading
           as="h1"
@@ -21,6 +34,20 @@ export function HomePage() {
         >
           Derzeitige Produkte
         </Heading>
+
+        <SimpleGrid
+            columns={{
+                base: 1,
+                md: 2,
+                lg: 3
+            }}
+            gap={10}
+            w={"full"}
+        >
+            {products.map((product) =>(
+                <ProductCard key={product._id} product={product}/>
+            ))}
+        </SimpleGrid>
 
         <Box
           w="full"
@@ -37,14 +64,14 @@ export function HomePage() {
             <Text
               fontSize={{ base: "lg", md: "xl" }}
               fontWeight="semibold"
-              color={mutedText}
+              color={text}
               textAlign="center"
             >
               Noch keine Produkte vorhanden
             </Text>
 
             <HStack gap={2} justify="center" flexWrap="wrap">
-              <Text color={mutedText}>Starte jetzt mit deinem ersten Eintrag.</Text>
+              <Text color={text}>Starte jetzt mit deinem ersten Eintrag.</Text>
 
               <Link
                 href="/create"
