@@ -1,12 +1,12 @@
 import { Box, Button, CloseButton, Dialog, Heading, HStack, IconButton, Image, Input, Portal, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "./color-mode";
-import { EditIcon, Trash } from "lucide-react";
+import { EditIcon, Trash, Heart } from "lucide-react";
 import { deleteProduct, updateProduct } from "./productApi";
 import { Toaster,toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 
 
-export function ProductCard({product, onDelete, onUpdate}: {product: any; onDelete: (id: string) => void; onUpdate: (updatedProduct: any) => void;}) {
+export function ProductCard({product, onDelete, onUpdate, onToggleFavorite, isFavorite}: {product: any; onDelete: (id: string) => void; onUpdate: (updatedProduct: any) => void; onToggleFavorite: (id: string) => void; isFavorite: boolean;}) {
     const text = useColorModeValue("gray.600", "gray.400");
     const buttonBg = useColorModeValue("teal.500", "teal.400");
     const buttonBgHover = useColorModeValue("teal.600", "teal.500");
@@ -76,13 +76,40 @@ export function ProductCard({product, onDelete, onUpdate}: {product: any; onDele
         <>
         <Toaster />
         <Box
+            position="relative"
             shadow={"lg"}
             rounded={"lg"}
             overflow={"hidden"}
             transition={"all 0.3s"}
             _hover={{transform: "translateY(-5px)", shadow: "xl"}}
         >
-            <Image src={product.image} alt= {product.name} h={52} w={"full"} objectFit={"cover"}/>
+
+            <Box position="absolute" top={3} right={3} zIndex={3}>
+                <IconButton
+                    aria-label="Favorit"
+                    rounded="full"
+                    size="sm"
+                    bg={isFavorite ? "red.500" : "whiteAlpha.800"}
+                    color={isFavorite ? "white" : "gray.700"}
+                    _hover={{ bg: isFavorite ? "red.600" : "white", transform: "scale(1.05)" }}
+                    transition="transform 0.2s ease"
+                    onClick={() => onToggleFavorite(product._id)}
+                >
+                    <Heart fill={isFavorite ? "currentColor" : "none"} size={16} />
+                </IconButton>
+            </Box>
+
+            <Box overflow="hidden">
+            <Image
+                src={product.image}
+                alt={product.name}
+                h={52}
+                w="full"
+                objectFit="cover"
+                transition="transform 0.4s ease"
+                _hover={{ transform: "scale(1.07)" }}
+            />
+            </Box>
             
             <Box p={5}>
                 <Heading as={"h3"} size={"md"} mb={2}>
@@ -93,14 +120,15 @@ export function ProductCard({product, onDelete, onUpdate}: {product: any; onDele
                     {product.price}€
                 </Text>
 
-                <HStack>
+                <HStack gap={3}>
 
                 <Dialog.Root>
                     <Dialog.Trigger asChild>
                     <IconButton aria-label="Produkt bearbeiten" 
                         bg={buttonBg}
                         color="white"
-                        _hover={{ bg: buttonBgHover }}
+                        _hover={{ bg: buttonBgHover, transform: "scale(1.05)" }}
+                        transition="transform 0.2s ease"
                         onClick={handleOpenEdit}>
                         <EditIcon />
                     </IconButton>
@@ -164,7 +192,8 @@ export function ProductCard({product, onDelete, onUpdate}: {product: any; onDele
                         aria-label="Produkt löschen" 
                         bg="red.500"
                         color="white"
-                        _hover={{ bg: "red.600" }}
+                        _hover={{ bg: "red.600", transform: "scale(1.05)" }}
+                        transition="transform 0.2s ease"
                         >
                             <Trash />
                         </IconButton>  

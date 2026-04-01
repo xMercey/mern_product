@@ -1,5 +1,5 @@
 import { useColorModeValue } from "@/components/color-mode";
-import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner, Input, NativeSelect} from "@chakra-ui/react";
+import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner, Input, NativeSelect, Button} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getProducts } from "@/components/productApi";
 import { ProductCard } from "@/components/ProductCard";
@@ -23,6 +23,8 @@ export function HomePage() {
   const [sortOption, setSortOption] = useState("default");
   const [priceFilter, setPriceFilter] = useState("all");
 
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
   async function fetchProducts() {
     try {
         const data = await getProducts();
@@ -38,6 +40,23 @@ export function HomePage() {
     fetchProducts();
   }, []);
 
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const savedFavorites = localStorage.getItem("favorites");
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  function toggleFavorite(id: string) {
+    setFavorites((prev) =>
+      prev.includes(id)
+        ? prev.filter((favId) => favId !== id)
+        : [...prev, id]
+    );
+  }
+
   const filteredProducts = products
   .filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -47,6 +66,10 @@ export function HomePage() {
     if (priceFilter === "100to300") return product.price >= 100 && product.price <= 300;
     if (priceFilter === "over300") return product.price > 300;
     return true;
+  })
+  .filter((product) => {
+    if (!showFavoritesOnly) return true;
+    return favorites.includes(product._id);
   })
   .sort((a, b) => {
     if (sortOption === "priceAsc") return a.price - b.price;
@@ -154,96 +177,110 @@ export function HomePage() {
             <option value="newest">Neueste</option>
           </NativeSelect.Field>
         </NativeSelect.Root>
+
+        <Button
+          onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+          bg={showFavoritesOnly ? "red.500" : useColorModeValue("gray.200", "whiteAlpha.200")}
+          color={showFavoritesOnly ? "white" : inputColor}
+          _hover={{
+            bg: showFavoritesOnly ? "red.600" : useColorModeValue("gray.300", "whiteAlpha.300"),
+          }}
+        >
+          {showFavoritesOnly ? "Alle anzeigen" : "Nur Favoriten"}
+        </Button>
         </HStack>
 
-        <SimpleGrid
-            columns={{
-                base: 1,
-                md: 2,
-                lg: 3
-            }}
-            gap={10}
-            w={"full"}
-        >
+          <SimpleGrid
+            columns={{ base: 1, md: 2, lg: 3 }}
+            gap={6}
+            w="full"
+          >
             <Box
-    p={5}
-    rounded="2xl"
-    shadow={shadow}
-    bg={cardBg}
-    border="1px solid"
-    borderColor={borderColor}
-  >
-    <Text color={text} fontSize="sm">
-      Produkte
-    </Text>
-    <Heading size="lg">{totalProducts}</Heading>
-  </Box>
+              p={5}
+              rounded="2xl"
+              shadow={shadow}
+              bg={cardBg}
+              border="1px solid"
+              borderColor={borderColor}
+            >
+              <Text color={text} fontSize="sm">
+                Produkte
+              </Text>
+              <Heading size="lg">{totalProducts}</Heading>
+            </Box>
 
-  <Box
-    p={5}
-    rounded="2xl"
-    shadow={shadow}
-    bg={cardBg}
-    border="1px solid"
-    borderColor={borderColor}
-  >
-    <Text color={text} fontSize="sm">
-      Ø Preis
-    </Text>
-    <Heading size="lg">{averagePrice}€</Heading>
-  </Box>
+            <Box
+              p={5}
+              rounded="2xl"
+              shadow={shadow}
+              bg={cardBg}
+              border="1px solid"
+              borderColor={borderColor}
+            >
+              <Text color={text} fontSize="sm">
+                Ø Preis
+              </Text>
+              <Heading size="lg">{averagePrice}€</Heading>
+            </Box>
 
-  <Box
-  p={5}
-  rounded="2xl"
-  shadow={shadow}
-  bg={cardBg}
-  border="1px solid"
-  borderColor={borderColor}
->
-  <HStack justify="space-between" align="start">
-    
-    <Box>
-      <Text color={text} fontSize="sm" mb={1}>
-        Günstigstes
-      </Text>
-      <Heading size="md" color="green.500">
-        {cheapestProduct ? `${cheapestProduct.price}€` : "-"}
-      </Heading>
-    </Box>
+            <Box
+              p={5}
+              rounded="2xl"
+              shadow={shadow}
+              bg={cardBg}
+              border="1px solid"
+              borderColor={borderColor}
+            >
+              <HStack justify="space-between" align="start">
+                <Box>
+                  <Text color={text} fontSize="sm" mb={1}>
+                    Günstigstes
+                  </Text>
+                  <Heading size="md" color="green.500">
+                    {cheapestProduct ? `${cheapestProduct.price}€` : "-"}
+                  </Heading>
+                </Box>
 
-    <Box
-      w="1px"
-      h="40px"
-      bg={useColorModeValue("gray.200", "whiteAlpha.300")}
-    />
+                <Box
+                  w="1px"
+                  h="40px"
+                  bg={useColorModeValue("gray.200", "whiteAlpha.300")}
+                />
 
-    <Box textAlign="right">
-      <Text color={text} fontSize="sm" mb={1}>
-        Teuerstes
-      </Text>
-      <Heading size="md" color="red.400">
-        {mostExpensiveProduct ? `${mostExpensiveProduct.price}€` : "-"}
-      </Heading>
-    </Box>
+                <Box textAlign="right">
+                  <Text color={text} fontSize="sm" mb={1}>
+                    Teuerstes
+                  </Text>
+                  <Heading size="md" color="red.400">
+                    {mostExpensiveProduct ? `${mostExpensiveProduct.price}€` : "-"}
+                  </Heading>
+                </Box>
+              </HStack>
+            </Box>
+          </SimpleGrid>
 
-  </HStack>
-</Box>
-
-  
-        {filteredProducts.map((product) => (
-            <ProductCard
-            key={product._id}
-            product={product}
-            onDelete={(id: string) =>
-                setProducts((prev) => prev.filter((p) => p._id !== id))
-            }
-            onUpdate={(updatedProduct: any) =>
-                setProducts((prev) => prev.map((p) => p._id === updatedProduct._id ? updatedProduct : p))
-            }
-            />
+          <SimpleGrid
+            columns={{ base: 1, md: 2, xl: 3 }}
+            gap={8}
+            w="full"
+          >
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onDelete={(id: string) =>
+                  setProducts((prev) => prev.filter((p) => p._id !== id))
+                }
+                onUpdate={(updatedProduct: any) =>
+                  setProducts((prev) =>
+                    prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
+                  )
+                }
+                onToggleFavorite={(id: string) => toggleFavorite(id)}
+                isFavorite={favorites.includes(product._id)}
+              />
             ))}
-        </SimpleGrid>
+          </SimpleGrid>
 
         {!loading && filteredProducts.length === 0 && (
                     <Box
