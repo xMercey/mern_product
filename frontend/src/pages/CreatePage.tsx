@@ -16,7 +16,7 @@ export function CreatePage() {
   const subText = useColorModeValue("gray.600", "gray.400");
   const inputBg = useColorModeValue("gray.50", "#0f172a");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
-  const button = useColorModeValue("teal.600", "teal.500");
+  const button = useColorModeValue("teal.600", "teal.300");
 
   async function handleAddProduct() {
     try {

@@ -8,7 +8,7 @@ export function Navbar() {
 
   const navBg = useColorModeValue("white", "#111827");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
-  const brandColor = useColorModeValue("teal.600", "teal.500");
+  const brandColor = useColorModeValue("teal.600", "teal.300");
 
   return (
     <Box

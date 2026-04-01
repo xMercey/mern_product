@@ -66,6 +66,9 @@ export function HomePage() {
             onDelete={(id: string) =>
                 setProducts((prev) => prev.filter((p) => p._id !== id))
             }
+            onUpdate={(updatedProduct: any) =>
+                setProducts((prev) => prev.map((p) => p._id === updatedProduct._id ? updatedProduct : p))
+            }
             />
             ))}
         </SimpleGrid>

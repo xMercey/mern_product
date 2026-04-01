@@ -55,6 +55,33 @@ export async function deleteProduct(id: String) {
     }
 
     return data;
-        
-
 }
+
+export async function updateProduct(
+    id: string,
+    product: {
+        name: string;
+        price: string;
+        image: string;
+    }
+) {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...product,
+          price: Number(product.price),
+        }),
+      });
+    
+      const data = await res.json();
+      console.log("UPDATE RESPONSE:", data);
+    
+      if (!res.ok) {
+        throw new Error(data.message || "Fehler beim Bearbeiten");
+      }
+    
+      return data.data;
+    }
