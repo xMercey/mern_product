@@ -1,5 +1,5 @@
 import { useColorModeValue } from "@/components/color-mode";
-import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner} from "@chakra-ui/react";
+import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner, Input, NativeSelect} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getProducts } from "@/components/productApi";
 import { ProductCard } from "@/components/ProductCard";
@@ -10,9 +10,18 @@ export function HomePage() {
   const cardBg = useColorModeValue("white", "gray.900");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const shadow = useColorModeValue("md", "dark-lg");
+  const inputBg = useColorModeValue("white", "#0f172a");
+  const inputColor = useColorModeValue("gray.800", "white");
+  const inputBorder = useColorModeValue("gray.200", "whiteAlpha.300");
+  const inputPlaceholder = useColorModeValue("gray.500", "gray.400");
+
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("default");
+  const [priceFilter, setPriceFilter] = useState("all");
 
   async function fetchProducts() {
     try {
@@ -28,9 +37,27 @@ export function HomePage() {
   useEffect(() => {
     fetchProducts();
   }, []);
+  const filteredProducts = products
+  .filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  .filter((product) => {
+    if (priceFilter === "under100") return product.price < 100;
+    if (priceFilter === "100to300") return product.price >= 100 && product.price <= 300;
+    if (priceFilter === "over300") return product.price > 300;
+    return true;
+  })
+  .sort((a, b) => {
+    if (sortOption === "priceAsc") return a.price - b.price;
+    if (sortOption === "priceDesc") return b.price - a.price;
+    if (sortOption === "newest") {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return 0;
+  });
 
   return (
-    <Container maxW="container.xl" py={{ base: 16, md: 24 }}>
+    <Container maxW="container.xl" py={{ base: 6, md: 20 }}>
       <VStack gap={10}>
         <Heading
           as="h1"
@@ -50,6 +77,54 @@ export function HomePage() {
           </VStack>
         )}
 
+        <HStack
+          w="full"
+          gap={4}
+          flexDir={{ base: "column", md: "row" }}
+          align="stretch"
+        >
+
+        <Input
+          placeholder="Produkt suchen..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          bg={inputBg}
+          color={inputColor}
+          borderColor={inputBorder}
+          _placeholder={{ color: inputPlaceholder }}
+        />
+
+        <NativeSelect.Root maxW={{ base: "full", md: "220px" }}>
+          <NativeSelect.Field
+            value={priceFilter}
+            onChange={(e) => setPriceFilter(e.target.value)}
+            bg={inputBg}
+            color={inputColor}
+            borderColor={inputBorder}
+          >
+            <option value="all">Alle Preise</option>
+            <option value="under100">Unter 100€</option>
+            <option value="100to300">100€ bis 300€</option>
+            <option value="over300">Über 300€</option>
+          </NativeSelect.Field>
+        </NativeSelect.Root>
+
+        <NativeSelect.Root maxW={{ base: "full", md: "220px" }}>
+          <NativeSelect.Field
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            bg={inputBg}
+            color={inputColor}
+            borderColor={inputBorder}
+          >
+            <option value="default">Standard</option>
+            <option value="priceAsc">Preis: günstig → teuer</option>
+            <option value="priceDesc">Preis: teuer → günstig</option>
+            <option value="newest">Neueste</option>
+          </NativeSelect.Field>
+        </NativeSelect.Root>
+        </HStack>
+
         <SimpleGrid
             columns={{
                 base: 1,
@@ -59,7 +134,7 @@ export function HomePage() {
             gap={10}
             w={"full"}
         >
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
             <ProductCard
             key={product._id}
             product={product}
@@ -73,7 +148,7 @@ export function HomePage() {
             ))}
         </SimpleGrid>
 
-        {!loading && products.length === 0 && (
+        {!loading && filteredProducts.length === 0 && (
                     <Box
                     w="full"
                     maxW="3xl"

@@ -90,7 +90,7 @@ export function ProductCard({product, onDelete, onUpdate}: {product: any; onDele
                 </Heading>
 
                 <Text fontWeight={"bold"} fontSize={"xl"} color={text} mb={4}>
-                    {product.price} Euro
+                    {product.price}€
                 </Text>
 
                 <HStack>
