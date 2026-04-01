@@ -7,10 +7,10 @@ import { ProductCard } from "@/components/ProductCard";
 export function HomePage() {
   const brandColor = useColorModeValue("teal.600", "teal.300");
   const text = useColorModeValue("gray.600", "gray.400");
-  const cardBg = useColorModeValue("white", "gray.900");
+  const cardBg = useColorModeValue("white", "#0f172a");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const shadow = useColorModeValue("md", "dark-lg");
-  const inputBg = useColorModeValue("white", "#0f172a");
+  const inputBg = useColorModeValue("gray.50", "#1e293b");
   const inputColor = useColorModeValue("gray.800", "white");
   const inputBorder = useColorModeValue("gray.200", "whiteAlpha.300");
   const inputPlaceholder = useColorModeValue("gray.500", "gray.400");
@@ -37,6 +37,7 @@ export function HomePage() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const filteredProducts = products
   .filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,6 +56,30 @@ export function HomePage() {
     }
     return 0;
   });
+
+  const totalProducts = filteredProducts.length;
+
+  const averagePrice =
+    totalProducts > 0
+      ? Math.round(
+          filteredProducts.reduce((sum, product) => sum + product.price, 0) /
+            totalProducts
+        )
+      : 0;
+
+  const cheapestProduct =
+    totalProducts > 0
+      ? filteredProducts.reduce((min, product) =>
+          product.price < min.price ? product : min
+        )
+      : null;
+
+  const mostExpensiveProduct =
+    totalProducts > 0
+      ? filteredProducts.reduce((max, product) =>
+          product.price > max.price ? product : max
+        )
+      : null;
 
   return (
     <Container maxW="container.xl" py={{ base: 6, md: 20 }}>
@@ -82,6 +107,12 @@ export function HomePage() {
           gap={4}
           flexDir={{ base: "column", md: "row" }}
           align="stretch"
+          p={4}
+          rounded="2xl"
+          bg={useColorModeValue("white", "#0f172a")}
+          border="1px solid"
+          borderColor={borderColor}
+          shadow={shadow}
         >
 
         <Input
@@ -134,6 +165,72 @@ export function HomePage() {
             gap={10}
             w={"full"}
         >
+            <Box
+    p={5}
+    rounded="2xl"
+    shadow={shadow}
+    bg={cardBg}
+    border="1px solid"
+    borderColor={borderColor}
+  >
+    <Text color={text} fontSize="sm">
+      Produkte
+    </Text>
+    <Heading size="lg">{totalProducts}</Heading>
+  </Box>
+
+  <Box
+    p={5}
+    rounded="2xl"
+    shadow={shadow}
+    bg={cardBg}
+    border="1px solid"
+    borderColor={borderColor}
+  >
+    <Text color={text} fontSize="sm">
+      Ø Preis
+    </Text>
+    <Heading size="lg">{averagePrice}€</Heading>
+  </Box>
+
+  <Box
+  p={5}
+  rounded="2xl"
+  shadow={shadow}
+  bg={cardBg}
+  border="1px solid"
+  borderColor={borderColor}
+>
+  <HStack justify="space-between" align="start">
+    
+    <Box>
+      <Text color={text} fontSize="sm" mb={1}>
+        Günstigstes
+      </Text>
+      <Heading size="md" color="green.500">
+        {cheapestProduct ? `${cheapestProduct.price}€` : "-"}
+      </Heading>
+    </Box>
+
+    <Box
+      w="1px"
+      h="40px"
+      bg={useColorModeValue("gray.200", "whiteAlpha.300")}
+    />
+
+    <Box textAlign="right">
+      <Text color={text} fontSize="sm" mb={1}>
+        Teuerstes
+      </Text>
+      <Heading size="md" color="red.400">
+        {mostExpensiveProduct ? `${mostExpensiveProduct.price}€` : "-"}
+      </Heading>
+    </Box>
+
+  </HStack>
+</Box>
+
+  
         {filteredProducts.map((product) => (
             <ProductCard
             key={product._id}

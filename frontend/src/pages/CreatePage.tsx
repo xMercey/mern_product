@@ -2,7 +2,7 @@ import { useColorModeValue } from "@/components/color-mode";
 import { createProduct } from "@/components/productApi";
 import {Container,VStack,Heading,Box,Input,Button,Text} from "@chakra-ui/react";
 import { useState } from "react";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 
 export function CreatePage() {
   const [newProduct, setNewProduct] = useState({
@@ -18,6 +18,8 @@ export function CreatePage() {
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const button = useColorModeValue("teal.600", "teal.300");
 
+  const [imageError, setImageError] = useState(false);
+
   async function handleAddProduct() {
     try {
         await createProduct(newProduct);
@@ -26,7 +28,11 @@ export function CreatePage() {
           description: "Das Produkt wurde erfolgreich gespeichert.",
           type: "success",
         });
-    } catch (error) {
+
+        setNewProduct({ name: "", price: "", image: "" });
+        setImageError(false);
+      } catch (error) {
+        setImageError(true);
         toaster.create({
           title: "Fehler",
           description: "Das Produkt konnte nicht gespeichert werden.",
@@ -38,7 +44,6 @@ export function CreatePage() {
 
   return (
     <>  
-    <Toaster />
     <Container maxW="container.md" py={{ base: 10, md: 14 }}>
       <VStack gap={8}>
         <VStack gap={2}>
@@ -98,10 +103,45 @@ export function CreatePage() {
               bg={inputBg}
               borderColor={borderColor}
               value={newProduct.image}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, image: e.target.value })
-              }
+              onChange={(e) => {
+                setNewProduct({ ...newProduct, image: e.target.value });
+                setImageError(false);
+              }}
             />
+
+            {newProduct.image && (
+              <Box w="full">
+                <Text mb={2} color={subText} fontSize="sm">
+                  Vorschau
+                </Text>
+
+                {!imageError ? (
+                  <Box
+                    overflow="hidden"
+                    rounded="xl"
+                    border="1px solid"
+                    borderColor={borderColor}
+                    bg={inputBg}
+                  >
+                    <img
+                      src={newProduct.image}
+                      alt="Produkt Vorschau"
+                      style={{
+                        width: "100%",
+                        height: "260px",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      onError={() => setImageError(true)}
+                    />
+                  </Box>
+                ) : (
+                  <Text color="red.400" fontSize="sm">
+                    Bild konnte nicht geladen werden.
+                  </Text>
+                )}
+              </Box>
+            )}
 
             <Button
               bg={button}
