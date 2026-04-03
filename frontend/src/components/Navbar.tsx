@@ -1,9 +1,9 @@
-import { Moon, SquarePlus, Sun, Store } from "lucide-react";
+import { Moon, SquarePlus, Sun, Store, ShoppingCart } from "lucide-react";
 import {Box,Button,Container,Flex,HStack,Icon,Text} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useColorMode, useColorModeValue } from "./color-mode";
 
-export function Navbar() {
+export function Navbar({ cartCount }: { cartCount: number }) {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const navBg = useColorModeValue("white", "#111827");
@@ -42,6 +42,38 @@ export function Navbar() {
 
           {/* Buttons */}
           <HStack gap={4}>
+          <Link to="/">
+          <Box position="relative">
+            <Button
+              size="lg"
+              rounded="2xl"
+              boxShadow="md"
+              variant="outline"
+            >
+              <ShoppingCart size={22} />
+            </Button>
+            
+            {cartCount > 0 && (
+              <Box
+                position="absolute"
+                top="-6px"
+                right="-6px"
+                bg="red.500"
+                color="white"
+                fontSize="xs"
+                px={2}
+                py="1"
+                rounded="full"
+                fontWeight="bold"
+                boxShadow="md"
+              >
+                {cartCount}
+              </Box>
+              
+            )}
+            
+          </Box>
+          </Link>
             <Link to="/create">
               <Button
                 size="lg"       

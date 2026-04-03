@@ -6,10 +6,10 @@ import { Toaster,toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 
 
-export function ProductCard({product, onDelete, onUpdate, onToggleFavorite, isFavorite}: {product: any; onDelete: (id: string) => void; onUpdate: (updatedProduct: any) => void; onToggleFavorite: (id: string) => void; isFavorite: boolean;}) {
+export function ProductCard({product, onDelete, onUpdate, onToggleFavorite, isFavorite, onAddToCart, onRemoveFromCart, isInCart}: {product: any; onDelete: (id: string) => void; onUpdate: (updatedProduct: any) => void; onToggleFavorite: (id: string) => void; isFavorite: boolean; onAddToCart: (id: string) => void; onRemoveFromCart: (id: string) => void; isInCart: boolean;}) {
     const text = useColorModeValue("gray.600", "gray.400");
-    const buttonBg = useColorModeValue("teal.500", "teal.400");
-    const buttonBgHover = useColorModeValue("teal.600", "teal.500");
+    const buttonBg = useColorModeValue("teal.600", "teal.500");
+    const buttonBgHover = useColorModeValue("teal.700", "teal.600");
     const [editName, setEditName] = useState(product.name);
     const [editPrice, setEditPrice] = useState(product.price);
     const [editImage, setEditImage] = useState(product.image);
@@ -120,118 +120,140 @@ export function ProductCard({product, onDelete, onUpdate, onToggleFavorite, isFa
                     {product.price}€
                 </Text>
 
+                <Box mt={2}>
                 <HStack gap={3}>
-
-                <Dialog.Root>
+                    <Dialog.Root>
                     <Dialog.Trigger asChild>
-                    <IconButton aria-label="Produkt bearbeiten" 
+                        <IconButton
+                        aria-label="Produkt bearbeiten"
                         bg={buttonBg}
                         color="white"
                         _hover={{ bg: buttonBgHover, transform: "scale(1.05)" }}
-                        transition="transform 0.2s ease"
-                        onClick={handleOpenEdit}>
+                        transition="all 0.2s ease"
+                        onClick={handleOpenEdit}
+                        >
                         <EditIcon />
-                    </IconButton>
+                        </IconButton>
                     </Dialog.Trigger>
 
                     <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
+                        <Dialog.Backdrop />
+                        <Dialog.Positioner>
                         <Dialog.Content maxW="xl" mx={4} rounded="2xl">
-                        <Dialog.Header>
+                            <Dialog.Header>
                             <Dialog.Title>Produkt bearbeiten</Dialog.Title>
-                        </Dialog.Header>
+                            </Dialog.Header>
 
-                        <Dialog.Body>
+                            <Dialog.Body>
                             <Text mb={2}>Name</Text>
                             <Input
-                            mb={4}
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
+                                mb={4}
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
                             />
 
                             <Text mb={2}>Preis</Text>
                             <Input
-                            mb={4}
-                            type="number"
-                            value={editPrice}
-                            onChange={(e) => setEditPrice(e.target.value)}
+                                mb={4}
+                                type="number"
+                                value={editPrice}
+                                onChange={(e) => setEditPrice(e.target.value)}
                             />
 
                             <Text mb={2}>Bild URL</Text>
                             <Input
-                            value={editImage}
-                            onChange={(e) => setEditImage(e.target.value)}
+                                value={editImage}
+                                onChange={(e) => setEditImage(e.target.value)}
                             />
-                        </Dialog.Body>
+                            </Dialog.Body>
 
-                        <Dialog.Footer>
+                            <Dialog.Footer>
                             <Dialog.ActionTrigger asChild>
-                            <Button variant="outline">Abbrechen</Button>
+                                <Button variant="outline">Abbrechen</Button>
                             </Dialog.ActionTrigger>
 
                             <Dialog.ActionTrigger asChild>
-                            <Button colorPalette="green" onClick={handleUpdateProduct}>
+                                <Button colorPalette="green" onClick={handleUpdateProduct}>
                                 Speichern
-                            </Button>
+                                </Button>
                             </Dialog.ActionTrigger>
-                        </Dialog.Footer>
+                            </Dialog.Footer>
 
-                        <Dialog.CloseTrigger asChild>
+                            <Dialog.CloseTrigger asChild>
                             <CloseButton size="md" />
-                        </Dialog.CloseTrigger>
+                            </Dialog.CloseTrigger>
                         </Dialog.Content>
-                    </Dialog.Positioner>
+                        </Dialog.Positioner>
                     </Portal>
-                </Dialog.Root>
+                    </Dialog.Root>
 
-
-                <Dialog.Root placement="center" motionPreset="slide-in-bottom">
+                    <Dialog.Root placement="center" motionPreset="slide-in-bottom">
                     <Dialog.Trigger asChild>
-                        <IconButton 
-                        aria-label="Produkt löschen" 
+                        <IconButton
+                        aria-label="Produkt löschen"
                         bg="red.500"
                         color="white"
                         _hover={{ bg: "red.600", transform: "scale(1.05)" }}
-                        transition="transform 0.2s ease"
+                        transition="all 0.2s ease"
                         >
-                            <Trash />
-                        </IconButton>  
+                        <Trash />
+                        </IconButton>
                     </Dialog.Trigger>
 
                     <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
+                        <Dialog.Backdrop />
+                        <Dialog.Positioner>
                         <Dialog.Content maxW="xl" mx={4} rounded="2xl">
-                        <Dialog.Header>
+                            <Dialog.Header>
                             <Dialog.Title>Produkt löschen</Dialog.Title>
-                        </Dialog.Header>
-                        <Dialog.Body>
+                            </Dialog.Header>
+
+                            <Dialog.Body>
                             <Text>
                                 Möchtest du <b>{product.name}</b> wirklich löschen?
                             </Text>
-                        </Dialog.Body>
+                            </Dialog.Body>
 
-                        <Dialog.Footer>
+                            <Dialog.Footer>
                             <Dialog.ActionTrigger asChild>
-                            <Button variant="outline">Abbrechen</Button>
+                                <Button variant="outline">Abbrechen</Button>
                             </Dialog.ActionTrigger>
 
-                            <Button 
-                            colorPalette={"red"}
-                                onClick={handleDeleteProduct}>
-                            Löschen
+                            <Button colorPalette="red" onClick={handleDeleteProduct}>
+                                Löschen
                             </Button>
+                            </Dialog.Footer>
 
-                        </Dialog.Footer>
-                        <Dialog.CloseTrigger asChild>
+                            <Dialog.CloseTrigger asChild>
                             <CloseButton size="md" />
-                        </Dialog.CloseTrigger>
+                            </Dialog.CloseTrigger>
                         </Dialog.Content>
-                    </Dialog.Positioner>
+                        </Dialog.Positioner>
                     </Portal>
-                </Dialog.Root>
+                    </Dialog.Root>
                 </HStack>
+
+                <Button
+                    w="full"
+                    mt={3}
+                    size="md"
+                    rounded="xl"
+                    bg={isInCart ? "red.500" : buttonBg}
+                    color="white"
+                    _hover={{
+                    bg: isInCart ? "red.600" : buttonBgHover,
+                    transform: "translateY(-1px)",
+                    }}
+                    transition="all 0.2s ease"
+                    onClick={() =>
+                    isInCart
+                        ? onRemoveFromCart(product._id)
+                        : onAddToCart(product._id)
+                    }
+                >
+                    {isInCart ? "Aus Warenkorb" : "In den Warenkorb"}
+                </Button>
+                </Box>
             </Box>
         </Box>
         </>

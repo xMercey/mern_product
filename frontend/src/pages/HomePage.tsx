@@ -3,8 +3,17 @@ import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner, Inpu
 import { useEffect, useState } from "react";
 import { getProducts } from "@/components/productApi";
 import { ProductCard } from "@/components/ProductCard";
+import { toaster } from "@/components/ui/toaster";
 
-export function HomePage() {
+export function HomePage({
+  cart,
+  addToCart,
+  removeFromCart,
+}: {
+  cart: string[];
+  addToCart: (id: string) => void;
+  removeFromCart: (id: string) => void;
+}) {
   const brandColor = useColorModeValue("teal.600", "teal.300");
   const text = useColorModeValue("gray.600", "gray.400");
   const cardBg = useColorModeValue("white", "#0f172a");
@@ -278,6 +287,9 @@ export function HomePage() {
                 }
                 onToggleFavorite={(id: string) => toggleFavorite(id)}
                 isFavorite={favorites.includes(product._id)}
+                onAddToCart={(id: string) => addToCart(id)}
+                onRemoveFromCart={(id: string) => removeFromCart(id)}
+                isInCart={cart.includes(product._id)}
               />
             ))}
           </SimpleGrid>
