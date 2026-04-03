@@ -3,7 +3,6 @@ import {Container,VStack,Text,Link,Heading,HStack,Box, SimpleGrid, Spinner, Inpu
 import { useEffect, useState } from "react";
 import { getProducts } from "@/components/productApi";
 import { ProductCard } from "@/components/ProductCard";
-import { toaster } from "@/components/ui/toaster";
 
 export function HomePage({
   cart,
@@ -33,6 +32,7 @@ export function HomePage({
   const [priceFilter, setPriceFilter] = useState("all");
 
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showCartOnly, setShowCartOnly] = useState(false);
 
   async function fetchProducts() {
     try {
@@ -79,6 +79,10 @@ export function HomePage({
   .filter((product) => {
     if (!showFavoritesOnly) return true;
     return favorites.includes(product._id);
+  })
+  .filter((product) => {
+    if(!showCartOnly) return true;
+    return cart.includes(product._id);
   })
   .sort((a, b) => {
     if (sortOption === "priceAsc") return a.price - b.price;
@@ -196,6 +200,17 @@ export function HomePage({
           }}
         >
           {showFavoritesOnly ? "Alle anzeigen" : "Nur Favoriten"}
+        </Button>
+
+        <Button
+          onClick={() => setShowCartOnly(!showCartOnly)}
+          bg={showCartOnly ? "red.500" : useColorModeValue("gray.200", "whiteAlpha.200")}
+          color={showCartOnly ? "white" : inputColor}
+          _hover={{
+            bg: showCartOnly ? "red.600" : useColorModeValue("gray.300", "whiteAlpha.300"),
+          }}
+        >
+          {showCartOnly ? "Alle anzeigen" : "Nur Warenkorb"}
         </Button>
         </HStack>
 
