@@ -43,7 +43,7 @@ export async function getProducts() {
     return data.products;
 }
 
-export async function deleteProduct(id: String) {
+export async function deleteProduct(id: string) {
     const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: "DELETE",
       });
